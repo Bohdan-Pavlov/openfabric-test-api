@@ -1,11 +1,9 @@
 import { Router } from 'express';
 
-import { Schemas, ValidateSchema } from '../middlewares/validate-schema.middleware';
-import authController from '../auth/auth.controller';
+import { Schemas, ValidateSchema } from '../middlewares';
+import { login, register } from '../auth';
 
-const router: Router = Router();
+export const authRouter: Router = Router();
 
-router.post('/register', ValidateSchema(Schemas.register), authController.register);
-router.post('/login', authController.login);
-
-export = router;
+authRouter.post('/register', ValidateSchema(Schemas.register), register);
+authRouter.post('/login', login);

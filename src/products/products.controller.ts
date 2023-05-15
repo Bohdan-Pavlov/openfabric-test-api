@@ -1,24 +1,24 @@
 import { NextFunction, Request, Response } from 'express';
 
-import ApiError from '../error/api-error';
+import { ApiError } from '../error/api-error';
 import { StatusCodes } from '../constants';
 import {
 	PRODUCT_ALREADY_EXISTS_ERROR,
 	PRODUCT_DELETED_SUCCESSFULLY,
 	PRODUCT_NOT_FOUND_ERROR,
 } from '../products/product.constants';
-import Product, { IProduct } from '../products/models/product.model';
+import { IProduct, IProductModel, Product } from '../products/models/product.model';
 
-const getAllProducts = async (request: Request, response: Response) => {
-	const products = await Product.find();
+export const getAllProducts = async (request: Request, response: Response) => {
+	const products: IProductModel[] = await Product.find();
 
 	return response.status(StatusCodes.OK).json(products);
 };
 
-const getProductById = async (request: Request, response: Response, next: NextFunction) => {
+export const getProductById = async (request: Request, response: Response, next: NextFunction) => {
 	const id = request.params.id;
 
-	const product = await Product.findById(id);
+	const product: IProductModel | null = await Product.findById(id);
 
 	if (!product) {
 		return next(ApiError.badRequest(PRODUCT_NOT_FOUND_ERROR));
@@ -27,31 +27,31 @@ const getProductById = async (request: Request, response: Response, next: NextFu
 	return response.status(StatusCodes.OK).json(product);
 };
 
-const createProduct = async (request: Request, response: Response, next: NextFunction) => {
+export const createProduct = async (request: Request, response: Response, next: NextFunction) => {
 	const productData: IProduct = request.body;
 
-	const isProductExist = await Product.findOne({ name: productData.name });
+	const isProductExist: IProductModel | null = await Product.findOne({ name: productData.name });
 
 	if (isProductExist) {
 		return next(ApiError.conflict(PRODUCT_ALREADY_EXISTS_ERROR));
 	}
 
-	const product = await Product.create(productData);
+	const product: IProductModel | null = await Product.create(productData);
 
 	return response.status(StatusCodes.CREATED).json(product);
 };
 
-const updateProduct = async (request: Request, response: Response, next: NextFunction) => {
+export const updateProduct = async (request: Request, response: Response, next: NextFunction) => {
 	const id = request.params.id;
 	const productData: IProduct = request.body;
 
-	const product = await Product.findOne({ name: productData.name });
+	const product: IProductModel | null = await Product.findOne({ name: productData.name });
 
 	if (product && product._id.toString() !== id) {
 		return next(ApiError.conflict(PRODUCT_ALREADY_EXISTS_ERROR));
 	}
 
-	const updatedProduct = await Product.findByIdAndUpdate(id, productData, { new: true });
+	const updatedProduct: IProductModel | null = await Product.findByIdAndUpdate(id, productData, { new: true });
 
 	if (!updatedProduct) {
 		return next(ApiError.badRequest(PRODUCT_NOT_FOUND_ERROR));
@@ -60,10 +60,10 @@ const updateProduct = async (request: Request, response: Response, next: NextFun
 	return response.status(StatusCodes.OK).json(updatedProduct);
 };
 
-const deleteProduct = async (request: Request, response: Response, next: NextFunction) => {
+export const deleteProduct = async (request: Request, response: Response, next: NextFunction) => {
 	const id = request.params.id;
 
-	const deletedProduct = await Product.findByIdAndDelete(id);
+	const deletedProduct: IProductModel | null = await Product.findByIdAndDelete(id);
 
 	if (!deletedProduct) {
 		return next(ApiError.badRequest(PRODUCT_NOT_FOUND_ERROR));
@@ -71,5 +71,3 @@ const deleteProduct = async (request: Request, response: Response, next: NextFun
 
 	return response.status(StatusCodes.OK).json({ message: PRODUCT_DELETED_SUCCESSFULLY });
 };
-
-export default { createProduct, getProductById, getAllProducts, updateProduct, deleteProduct };

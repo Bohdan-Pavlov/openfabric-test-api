@@ -1,7 +1,7 @@
 import Joi, { ObjectSchema, ValidationError } from 'joi';
 import { Request, Response, NextFunction } from 'express';
 
-import ApiError from '../error/api-error';
+import { ApiError } from '../error/api-error';
 import { UNEXPECTED_ERROR } from '../constants';
 
 export const ValidateSchema = (schema: ObjectSchema) => async (req: Request, res: Response, next: NextFunction) => {

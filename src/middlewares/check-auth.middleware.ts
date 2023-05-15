@@ -2,8 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
 import { NOT_AUTHORIZED_ERROR, RESERVE_SECRET_KEY } from '../auth/auth.constants';
-import ApiError from '../error/api-error';
-import User from '../auth/models/auth.model';
+import { ApiError } from '../error/api-error';
+import { User } from '../auth/models/auth.model';
 
 interface DecodedToken {
 	id: string;

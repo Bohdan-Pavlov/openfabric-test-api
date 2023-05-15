@@ -4,8 +4,8 @@ import jwt from 'jsonwebtoken';
 
 import { StatusCodes } from '../constants';
 import { INVALID_CREDENTIALS_ERROR, RESERVE_SECRET_KEY, USER_ALREADY_EXISTS_ERROR } from '../auth/auth.constants';
-import ApiError from '../error/api-error';
-import User, { IAuthDto, IAuthResponse } from '../auth/models/auth.model';
+import { ApiError } from '../error/api-error';
+import { IAuthDto, IAuthResponse, IUserModel, User } from '../auth/models/auth.model';
 
 const generateJwt = (id: string, email: string) => {
 	return jwt.sign(
@@ -18,10 +18,10 @@ const generateJwt = (id: string, email: string) => {
 	);
 };
 
-const login = async (request: Request, response: Response, next: NextFunction) => {
+export const login = async (request: Request, response: Response, next: NextFunction) => {
 	const { email, password } = request.body as IAuthDto;
 
-	const user = await User.findOne({ email });
+	const user: IUserModel | null = await User.findOne({ email });
 
 	if (!user) {
 		return next(ApiError.badRequest(INVALID_CREDENTIALS_ERROR));
@@ -42,10 +42,10 @@ const login = async (request: Request, response: Response, next: NextFunction) =
 	return response.status(StatusCodes.OK).json(responseData);
 };
 
-const register = async (request: Request, response: Response, next: NextFunction) => {
+export const register = async (request: Request, response: Response, next: NextFunction) => {
 	const { email, password } = request.body as IAuthDto;
 
-	const candidate = await User.findOne({ email });
+	const candidate: IUserModel | null = await User.findOne({ email });
 
 	if (candidate) {
 		return next(ApiError.conflict(USER_ALREADY_EXISTS_ERROR));
@@ -55,7 +55,7 @@ const register = async (request: Request, response: Response, next: NextFunction
 	const salt = await bcrypt.genSalt(saltRounds);
 	const hashPassword = await bcrypt.hash(password, salt);
 
-	const user = await User.create({ email, passwordHash: hashPassword });
+	const user: IUserModel = await User.create({ email, passwordHash: hashPassword });
 
 	const token = generateJwt(user.id, user.email);
 
@@ -65,5 +65,3 @@ const register = async (request: Request, response: Response, next: NextFunction
 
 	return response.status(StatusCodes.OK).json(responseData);
 };
-
-export default { login, register };

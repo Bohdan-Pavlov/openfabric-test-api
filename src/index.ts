@@ -3,8 +3,8 @@ import express, { Express } from 'express';
 import mongoose from 'mongoose';
 import cors from 'cors';
 
-import errorHandler from './middlewares/error-handling.middleware';
-import router from './routes';
+import { errorHandler } from './middlewares';
+import { router } from './routes';
 import { config } from './config';
 
 dotenv.config();

@@ -1,6 +1,6 @@
 import { StatusCodes } from '../constants';
 
-class ApiError extends Error {
+export class ApiError extends Error {
 	status: number;
 	message: string;
 
@@ -30,5 +30,3 @@ class ApiError extends Error {
 		return new ApiError(StatusCodes.UNPROCESSABLE_ENTITY, message);
 	}
 }
-
-export default ApiError;

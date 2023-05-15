@@ -1,15 +1,13 @@
 import { Router } from 'express';
 
-import { CheckAuth } from '../middlewares/check-auth.middleware';
-import { Schemas, ValidateSchema } from '../middlewares/validate-schema.middleware';
-import productsController from '../products/products.controller';
+import { CheckAuth } from '../middlewares';
+import { Schemas, ValidateSchema } from '../middlewares';
+import { createProduct, getAllProducts, getProductById, updateProduct, deleteProduct } from '../products';
 
-const router: Router = Router();
+export const productsRouter: Router = Router();
 
-router.post('/', CheckAuth, ValidateSchema(Schemas.product), productsController.createProduct);
-router.get('/', productsController.getAllProducts);
-router.get('/:id', productsController.getProductById);
-router.patch('/:id', CheckAuth, ValidateSchema(Schemas.product), productsController.updateProduct);
-router.delete('/:id', CheckAuth, productsController.deleteProduct);
-
-export = router;
+productsRouter.post('/', CheckAuth, ValidateSchema(Schemas.product), createProduct);
+productsRouter.get('/', getAllProducts);
+productsRouter.get('/:id', getProductById);
+productsRouter.patch('/:id', CheckAuth, ValidateSchema(Schemas.product), updateProduct);
+productsRouter.delete('/:id', CheckAuth, deleteProduct);
