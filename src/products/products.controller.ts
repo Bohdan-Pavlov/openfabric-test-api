@@ -45,6 +45,12 @@ const updateProduct = async (request: Request, response: Response, next: NextFun
 	const id = request.params.id;
 	const productData: IProduct = request.body;
 
+	const product = await Product.findOne({ name: productData.name });
+
+	if (product && product._id.toString() !== id) {
+		return next(ApiError.conflict(PRODUCT_ALREADY_EXISTS_ERROR));
+	}
+
 	const updatedProduct = await Product.findByIdAndUpdate(id, productData, { new: true });
 
 	if (!updatedProduct) {
