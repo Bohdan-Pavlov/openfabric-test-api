@@ -11,20 +11,24 @@ interface DecodedToken {
 }
 
 export const CheckAuth = async (req: Request, res: Response, next: NextFunction) => {
-	const token: string | undefined = req.headers.authorization?.split(' ')[1];
+	try {
+		const token: string | undefined = req.headers.authorization?.split(' ')[1];
 
-	if (!token) {
-		return next(ApiError.forbidden(NOT_AUTHORIZED_ERROR));
+		if (!token) {
+			return next(ApiError.forbidden(NOT_AUTHORIZED_ERROR));
+		}
+
+		const decodedToken: DecodedToken = jwt.verify(token, process.env.SECRET_KEY ?? RESERVE_SECRET_KEY) as DecodedToken;
+		const userId = decodedToken.id;
+
+		const user: IUserModel | null = await User.findById(userId);
+
+		if (!user) {
+			return next(ApiError.forbidden(NOT_AUTHORIZED_ERROR));
+		}
+
+		return next();
+	} catch (e) {
+		return next(e);
 	}
-
-	const decodedToken: DecodedToken = jwt.verify(token, process.env.SECRET_KEY ?? RESERVE_SECRET_KEY) as DecodedToken;
-	const userId = decodedToken.id;
-
-	const user: IUserModel | null = await User.findById(userId);
-
-	if (!user) {
-		return next(ApiError.forbidden(NOT_AUTHORIZED_ERROR));
-	}
-
-	return next();
 };

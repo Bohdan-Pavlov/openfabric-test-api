@@ -11,3 +11,5 @@ export enum StatusCodes {
 }
 
 export const UNEXPECTED_ERROR = 'Unexpected error!';
+export const DATABASE_CONNECTED_SUCCESSFULLY = 'Connected to MongoDB';
+export const DATABASE_CONNECTION_ERROR = 'Error connecting to MongoDB';
