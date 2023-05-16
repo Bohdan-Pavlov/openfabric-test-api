@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start:prod": "SET TZ='UTC' && node dist/index.js",
+    "start:prod": "node dist/index.js",
     "start:dev": "SET TZ='UTC' && nodemon",
     "prestart": "npm run build",
     "prebuild": "npm run lint",
